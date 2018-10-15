@@ -1,0 +1,13 @@
+[Interface]
+Address = {{ vpn_ip }}
+PrivateKey = {{ private.content | b64decode }}
+ListenPort = {{ wireguard_port }}
+
+{% for node in play_hosts %}
+[Peer]
+PublicKey = {{ hostvars[node].public.content | b64decode }}
+AllowedIPs = {{ hostvars[node].vpn_ip }}
+Endpoint = {{ hostvars[node]['inventory_hostname'] }}:{{ wireguard_port }}
+
+{% endfor %}
+

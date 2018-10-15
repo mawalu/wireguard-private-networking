@@ -1,0 +1,6 @@
+---
+wireguard_port: "5888"
+wireguard_path: "/etc/wireguard"
+
+wireguard_network_name: "private"
+

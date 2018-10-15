@@ -1,0 +1,61 @@
+---
+- name: Add wireguard ppa (Ubuntu)
+  apt_repository:
+    repo: 'ppa:wireguard/wireguard'
+  when:
+    - ansible_distribution == "Ubuntu"
+
+- name: Install linux headers (Ubuntu)
+  apt:
+    update_cache: yes
+    state: present
+    name: linux-headers-generic
+  when:
+    - ansible_distribution == "Ubuntu"
+
+- name: Install wireguard and requirements
+  package:
+    state: present
+    name:
+      - wireguard-dkms
+      - wireguard-tools
+
+- stat:
+    path: "{{ wireguard_path }}/privatekey"
+  register: privatekey
+
+- name: Generate wireguard keys
+  shell: "umask 077; wg genkey | tee {{ wireguard_path  }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey"
+  when: privatekey.stat.exists == false
+
+- name: Read private key
+  slurp:
+    src: "{{ wireguard_path }}/privatekey"
+  register: private
+
+- name: Read public key
+  slurp:
+    src: "{{ wireguard_path }}/publickey"
+  register: public
+
+- name: Generate configs
+  template:
+    src: interface.conf.j2
+    dest: "{{ wireguard_path }}/{{ wireguard_network_name }}.conf"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o="
+  register: config
+
+- name: Start and enable wg-quick systemd service
+  systemd:
+    name: "wg-quick@{{wireguard_network_name}}"
+    enabled: yes
+    state: started
+
+- name: Restart wg-quick service if required
+  systemd:
+    name: "wg-quick@{{wireguard_network_name}}"
+    state: restarted
+  when: config.changed
+
