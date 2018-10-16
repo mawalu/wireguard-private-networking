@@ -24,6 +24,7 @@ wireguard:
 
 ```yaml
 # playbook
+
 - name: Configure wireguard mesh
   hosts: wireguard
   remote_user: root
