@@ -8,17 +8,44 @@
 - name: Install linux headers (Ubuntu)
   apt:
     update_cache: yes
-    state: present
+    state: latest
     name: linux-headers-generic
   when:
     - ansible_distribution == "Ubuntu"
 
-- name: Install wireguard and requirements
-  package:
-    state: present
-    name:
-      - wireguard-dkms
-      - wireguard-tools
+- name: Add unstable repository (Debian)
+  copy:
+    src: templates/unstable.list
+    dest: /etc/apt/sources.list.d/unstable.list
+  when:
+    - ansible_distribution == "Debian" and debian_enable_testing
+
+- name: Pin packages (Debian)
+  copy:
+    src: templates/limit-unstable
+    dest: /etc/apt/preferences.d/limit-unstable
+  when:
+    - ansible_distribution == "Debian" and debian_pin_packages
+
+- name: Get kernel version (Debian)
+  command: uname -r
+  register: kernel
+  when:
+    - ansible_distribution == "Debian"
+
+- name: Install kernel headers (Debian)
+  apt:
+    state: latest
+    update_cache: true
+    name: linux-headers-{{ kernel.stdout }}
+  when:
+    - ansible_distribution == "Debian"
+
+- name: Install wireguard
+  apt:
+    update_cache: yes
+    state: latest
+    name: wireguard
 
 - stat:
     path: "{{ wireguard_path }}/privatekey"
