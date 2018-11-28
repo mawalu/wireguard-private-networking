@@ -6,4 +6,3 @@ wireguard_network_name: "private"
 
 debian_enable_testing: true
 debian_pin_packages: true
-

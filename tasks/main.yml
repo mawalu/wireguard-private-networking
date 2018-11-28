@@ -8,7 +8,7 @@
 - name: Install linux headers (Ubuntu)
   apt:
     update_cache: yes
-    state: latest
+    state: present
     name: linux-headers-generic
   when:
     - ansible_distribution == "Ubuntu"
@@ -35,7 +35,7 @@
 
 - name: Install kernel headers (Debian)
   apt:
-    state: latest
+    state: present
     update_cache: true
     name: linux-headers-{{ kernel.stdout }}
   when:
@@ -44,16 +44,17 @@
 - name: Install wireguard
   apt:
     update_cache: yes
-    state: latest
+    state: present
     name: wireguard
 
-- stat:
+- name: Read private key
+  stat:
     path: "{{ wireguard_path }}/privatekey"
   register: privatekey
 
 - name: Generate wireguard keys
   shell: "umask 077; wg genkey | tee {{ wireguard_path  }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey"
-  when: privatekey.stat.exists == false
+  when: not privatekey.stat.exists
 
 - name: Read private key
   slurp:
@@ -76,13 +77,12 @@
 
 - name: Start and enable wg-quick systemd service
   systemd:
-    name: "wg-quick@{{wireguard_network_name}}"
+    name: "wg-quick@{{ wireguard_network_name }}"
     enabled: yes
     state: started
 
 - name: Restart wg-quick service if required
   systemd:
-    name: "wg-quick@{{wireguard_network_name}}"
+    name: "wg-quick@{{ wireguard_network_name }}"
     state: restarted
   when: config.changed
-
