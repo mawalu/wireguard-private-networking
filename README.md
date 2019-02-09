@@ -37,7 +37,7 @@ wireguard:
   hosts: wireguard
   remote_user: root
   roles:
-    - wireguard
+    - mawalu.wireguard_private_networking
 ```
 
 ## Additional configuration
