@@ -6,6 +6,14 @@ This role allowes you to deploy a fast, secure and provider agnostic private net
 
 The role installs [wireguard](https://wireguard.com) on Debian or Ubuntu, creates a mesh between all servers by adding them all as peers and configures the wg-quick systemd service.
 
+## Installation
+
+Installation can be done using [ansible galaxy](https://galaxy.ansible.com/mawalu/wireguard_private_networking):
+
+```
+$ ansible-galaxy install mawalu.wireguard_private_networking
+```
+
 ## Setup
 
 Install this role, assign a `vpn_ip` variable to every host that should be part of the network and run the role. Plese make sure to allow the VPN port (default is 5888) in your firewall. Here as a small example configuration:
