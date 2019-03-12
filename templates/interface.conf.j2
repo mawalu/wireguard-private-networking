@@ -8,7 +8,7 @@ ListenPort = {{ wireguard_port }}
 [Peer]
 PublicKey = {{ hostvars[node].public.content | b64decode | trim }}
 AllowedIPs = {{ hostvars[node].vpn_ip }}
-Endpoint = {{ hostvars[node]['inventory_hostname'] }}:{{ wireguard_port }}
+Endpoint = {{ hostvars[node]['ansible_host'] }}:{{ wireguard_port }}
 
 {% endif %}
 {% endfor %}
