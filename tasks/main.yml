@@ -66,6 +66,34 @@
     src: "{{ wireguard_path }}/publickey"
   register: public
 
+- name: Read private client's key
+  stat:
+    path: "{{ wireguard_path }}/client_privatekey"
+  register: client_privatekey
+  run_once: true
+  when: generate_client_config
+
+- name: Generate wireguard client's keys
+  shell: "umask 077; wg genkey | tee {{ wireguard_path  }}/client_privatekey | wg pubkey > {{ wireguard_path }}/client_publickey"
+  run_once: true
+  when:
+    - generate_client_config
+    - not client_privatekey.stat.exists
+
+- name: Read private client's key
+  slurp:
+    src: "{{ wireguard_path }}/client_privatekey"
+  register: client_privatekey
+  run_once: true
+  when: generate_client_config
+
+- name: Read public client's key
+  slurp:
+    src: "{{ wireguard_path }}/client_publickey"
+  register: client_publickey
+  run_once: true
+  when: generate_client_config
+
 - name: Generate configs
   template:
     src: interface.conf.j2
@@ -74,6 +102,18 @@
     group: root
     mode: "u=rw,g=r,o="
   register: config
+
+- name: Generate client's config
+  template:
+    src: client.conf.j2
+    dest: "{{ client_wireguard_path }}"
+    mode: "u=rw,g=,o="
+  vars:
+    ansible_connection: local
+  become: no
+  run_once: true
+  when: generate_client_config
+  delegate_to: localhost
 
 - name: Start and enable wg-quick systemd service
   systemd:

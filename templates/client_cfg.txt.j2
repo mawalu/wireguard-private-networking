@@ -1,0 +1,13 @@
+[Interface]
+Address = {{ client_vpn_ip }}
+PrivateKey = {{ client_privatekey.content | b64decode | trim }}
+
+{% for node in play_hosts %}
+[Peer]
+PublicKey = {{ hostvars[node].public.content | b64decode | trim }}
+AllowedIPs = {{ hostvars[node].vpn_ip }}
+Endpoint = {{ hostvars[node]['ansible_host'] }}:{{ wireguard_port }}
+PersistentKeepalive = 25
+
+{% endfor %}
+

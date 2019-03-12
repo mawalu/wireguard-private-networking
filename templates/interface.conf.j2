@@ -13,3 +13,8 @@ Endpoint = {{ hostvars[node]['ansible_host'] }}:{{ wireguard_port }}
 {% endif %}
 {% endfor %}
 
+{% if generate_client_config | bool %}
+[Peer]
+PublicKey = {{ client_publickey.content | b64decode | trim }}
+AllowedIPs = {{ client_vpn_ip }}
+{% endif %}
