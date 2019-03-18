@@ -7,5 +7,4 @@ wireguard_network_name: "private"
 debian_enable_testing: true
 debian_pin_packages: true
 
-generate_client_config: false
-client_wireguard_path: "~/wg.conf"
+client_wireguard_path: ""

@@ -13,7 +13,7 @@ Endpoint = {{ hostvars[node]['ansible_host'] | default(hostvars[node]['inventory
 {% endif %}
 {% endfor %}
 
-{% if generate_client_config | bool %}
+{% if client_wireguard_path | length > 0 %}
 [Peer]
 PublicKey = {{ client_publickey.content | b64decode | trim }}
 AllowedIPs = {{ client_vpn_ip }}
