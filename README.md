@@ -16,7 +16,7 @@ $ ansible-galaxy install mawalu.wireguard_private_networking
 
 ## Setup
 
-Install this role, assign a `vpn_ip` variable to every host that should be part of the network and run the role. Plese make sure to allow the VPN port (default is 5888) in your firewall. Here as a small example configuration:
+Install this role, assign a `vpn_ip` variable to every host that should be part of the network and run the role. Plese make sure to allow the VPN port (default is 5888) in your firewall. Here is a small example configuration:
 
 ```yaml
 # inventory host file
