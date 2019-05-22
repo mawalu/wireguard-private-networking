@@ -56,7 +56,7 @@ debian_pin_packages: true # if the pin configuration to limit the use of unstabl
 client_wireguard_path: "" # if set an additional wireguard config file will be generated at the specified path on localhost
 
 # a list of additional peers that will be added to each server
-wireguard_additinal_peers:
+wireguard_additional_peers:
   - comment: martin
     ip: 10.2.3.4
     key: your_wireguard_public_key

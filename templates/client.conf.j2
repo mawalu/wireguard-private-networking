@@ -11,8 +11,8 @@ PersistentKeepalive = 25
 
 {% endfor %}
 
-{% if wireguard_additinal_peers %}
-{% for node in wireguard_additinal_peers %}
+{% if wireguard_additionalpeers %}
+{% for node in wireguard_additional_peers %}
 # {{ node.comment  }}
 [Peer]
 PublicKey = {{ node.key }}
