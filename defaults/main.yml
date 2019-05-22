@@ -8,3 +8,5 @@ debian_enable_testing: true
 debian_pin_packages: true
 
 client_wireguard_path: ""
+
+wireguard_additinal_peers: false
