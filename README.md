@@ -53,7 +53,13 @@ wireguard_network_name: "private" # the name to use for the config file and wg-q
 debian_enable_testing: true # if the debian testing repos should be added on debian machines
 debian_pin_packages: true # if the pin configuration to limit the use of unstable repos should be created on debian machines
 
-client_wireguard_path: "~/wg.conf" (defaul if blank string) # the path to config file which will be generated on localhost
+client_wireguard_path: "" # if set an additional wireguard config file will be generated at the specified path on localhost
+
+# a list of additional peers that will be added to each server
+wireguard_additinal_peers:
+  - comment: martin
+    ip: 10.2.3.4
+    key: your_wireguard_public_key
 ```
 
 ## Contributing
