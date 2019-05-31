@@ -11,7 +11,7 @@ PersistentKeepalive = 25
 
 {% endfor %}
 
-{% if wireguard_additionalpeers %}
+{% if wireguard_additional_peers %}
 {% for node in wireguard_additional_peers %}
 # {{ node.comment  }}
 [Peer]
