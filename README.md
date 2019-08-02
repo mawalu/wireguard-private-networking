@@ -1,5 +1,7 @@
-# Private server to server network with ansible and wireguard
-
+# Private server to server network with ansible and wireguard 
+ 
+![Ansible Role](https://img.shields.io/ansible/role/d/33136)
+ 
 This role allowes you to deploy a fast, secure and provider agnostic private network between multiple servers. This is usefull for providers like [hetzner cloud](https://hetzner.cloud) that do not provide you with a private network or if you want to connect servers that are spread over multiple regions and providers.
 
 ## How
