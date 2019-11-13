@@ -62,6 +62,9 @@ wireguard_additional_peers:
   - comment: martin
     ip: 10.2.3.4
     key: your_wireguard_public_key
+
+wireguard_post_up: "iptables ..." # PostUp hook command
+wireguard_post_down: "iptables"   # PostDown hook command
 ```
 
 ## Contributing
