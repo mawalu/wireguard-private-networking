@@ -1,6 +1,12 @@
 [Interface]
 Address = {{ vpn_ip }}
 PrivateKey = {{ private.content | b64decode | trim }}
+{% if wireguard_post_up %}
+PostUp = {{ wireguard_post_up }}
+{% endif %}
+{% if wireguard_post_down %}
+PostDown = {{ wireguard_post_down }}
+{% endif %}
 ListenPort = {{ wireguard_port }}
 
 {% for node in play_hosts %}
