@@ -41,11 +41,22 @@
   when:
     - ansible_distribution == "Debian"
 
-- name: Install wireguard
+- name: Install wireguard (apt)
   apt:
     update_cache: yes
     state: present
     name: wireguard
+  when:
+    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+
+- name: Install wireguard (pacman)
+  pacman:
+    name:
+      - wireguard-dkms
+      - wireguard-tools
+    state: present
+  when:
+    - ansible_distribution == "Arch Linux"
 
 - name: Read private key
   stat:
