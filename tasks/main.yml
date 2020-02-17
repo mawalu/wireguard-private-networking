@@ -56,7 +56,7 @@
       - wireguard-tools
     state: present
   when:
-    - ansible_distribution == "Arch Linux"
+    - ansible_distribution == "Arch Linux" or ansible_distribution == "Arch Linux ARM"
 
 - name: Read private key
   stat:
