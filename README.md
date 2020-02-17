@@ -62,6 +62,11 @@ wireguard_additional_peers:
   - comment: martin
     ip: 10.2.3.4
     key: your_wireguard_public_key
+  - comment: other_network
+    ip: 10.32.0.0/16
+    key: their_wireguard_public_key
+    keepalive: 20 
+    endpoint: some.endpoint:2230 
 
 wireguard_post_up: "iptables ..." # PostUp hook command
 wireguard_post_down: "iptables"   # PostDown hook command
