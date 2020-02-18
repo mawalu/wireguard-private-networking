@@ -31,10 +31,10 @@ AllowedIPs = {{ client_vpn_ip }}
 [Peer]
 PublicKey = {{ node.key }}
 AllowedIPs = {{ node.ip }}
-{% if node.endpoint %}
+{% if node.endpoint is defined %}
 Endpoint = {{ node.endpoint }}
 {% endif %}
-{% if node.endpoint %}
+{% if node.keepalive is defined %}
 PersistentKeepalive = {{ node.keepalive }}
 {% endif %}
 
