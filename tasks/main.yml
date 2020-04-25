@@ -4,6 +4,7 @@
     repo: 'ppa:wireguard/wireguard'
   when:
     - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version|int < 20
 
 - name: Install linux headers (Ubuntu)
   apt:
@@ -12,6 +13,7 @@
     name: linux-headers-generic
   when:
     - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version|int < 20
 
 - name: Add unstable repository (Debian)
   copy:
