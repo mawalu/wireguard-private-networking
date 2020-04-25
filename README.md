@@ -42,6 +42,18 @@ wireguard:
     - mawalu.wireguard_private_networking
 ```
 
+```yaml
+# playbook (with client config)
+- name: Configure wireguard mesh
+  hosts: wireguard
+  remote_user: root
+  vars:
+    client_vpn_ip: 10.1.0.100
+    client_wireguard_path: "~/my-client-config.conf"
+  roles:
+    - mawalu.wireguard_private_networking
+```
+
 ## Additional configuration
 
 There are a small number of role variables that can be overwritten.
@@ -55,7 +67,8 @@ wireguard_network_name: "private" # the name to use for the config file and wg-q
 debian_enable_testing: true # if the debian testing repos should be added on debian machines
 debian_pin_packages: true # if the pin configuration to limit the use of unstable repos should be created on debian machines
 
-client_wireguard_path: "" # if set an additional wireguard config file will be generated at the specified path on localhost
+client_vpn_ip: "" # if set an additional wireguard config file will be generated at the specified path on localhost
+client_wireguard_path: "~/wg.conf" # path on localhost to write client config, if client_vpn_ip is set 
 
 # a list of additional peers that will be added to each server
 wireguard_additional_peers:
