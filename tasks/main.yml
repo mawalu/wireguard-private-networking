@@ -60,6 +60,55 @@
   when:
     - ansible_distribution == "Archlinux"
 
+- name: Install wireguard (CentOS 8)
+  block:
+    - name: Install wireguard (CentOS 8)
+      dnf:
+        name:
+          - elrepo-release
+          - epel-release
+        state: present
+
+    - dnf:
+        name:
+          - kmod-wireguard
+          - wireguard-tools
+        state: present
+
+    - file:
+        path: /etc/wireguard
+        state: directory
+        mode: u=rwx,g=rx,o=rx
+
+  when: ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "8"
+
+- name: Install wireguard (CentOS 7)
+  block:
+    - name: Install wireguard (CentOS 7)
+      yum:
+        name:
+          - epel-release
+          - https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+        state: present
+
+    - yum:
+        name:
+          - yum-plugin-elrepo
+        state: present
+
+    - yum:
+        name:
+          - kmod-wireguard
+          - wireguard-tools
+        state: present
+
+    - file:
+        path: /etc/wireguard
+        state: directory
+        mode: u=rwx,g=rx,o=rx
+
+  when: ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "7"
+
 - name: Read private key
   stat:
     path: "{{ wireguard_path }}/privatekey"
