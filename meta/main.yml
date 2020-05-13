@@ -13,7 +13,13 @@ galaxy_info:
   - name: Debian
     versions:
     - all
-
+  - name: Archlinux
+    versions:
+    - all
+  - name: CentOS
+    versions:
+    - 7
+    - 8
   galaxy_tags:
   - wireguard
   - vpn
