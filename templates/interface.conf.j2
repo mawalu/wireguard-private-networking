@@ -8,6 +8,9 @@ PostUp = {{ wireguard_post_up }}
 PostDown = {{ wireguard_post_down }}
 {% endif %}
 ListenPort = {{ wireguard_port }}
+{% if wireguard_mtu %}
+MTU = {{ wireguard_mtu }}
+{% endif %}
 
 {% for node in play_hosts %}
 {% if inventory_hostname != hostvars[node]['inventory_hostname'] %}
