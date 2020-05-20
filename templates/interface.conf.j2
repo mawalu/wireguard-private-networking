@@ -8,7 +8,7 @@ PostUp = {{ wireguard_post_up }}
 PostDown = {{ wireguard_post_down }}
 {% endif %}
 ListenPort = {{ wireguard_port }}
-{% if wireguard_mtu %}
+{% if wireguard_mtu is defined %}
 MTU = {{ wireguard_mtu }}
 {% endif %}
 
