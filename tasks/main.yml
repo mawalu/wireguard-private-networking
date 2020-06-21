@@ -22,26 +22,12 @@
   when:
     - ansible_distribution == "Debian" and debian_enable_testing
 
-- name: Pin packages (Debian)
-  copy:
-    src: templates/limit-unstable
-    dest: /etc/apt/preferences.d/limit-unstable
-  when:
-    - ansible_distribution == "Debian" and debian_pin_packages
-
-- name: Get kernel version (Debian)
-  command: uname -r
-  register: kernel
-  when:
-    - ansible_distribution == "Debian"
-
-- name: Install kernel headers (Debian)
-  apt:
-    state: present
-    update_cache: true
-    name: linux-headers-{{ kernel.stdout }}
-  when:
-    - ansible_distribution == "Debian"
+    # - name: Pin packages (Debian)
+    #   copy:
+    #     src: templates/limit-unstable
+    #     dest: /etc/apt/preferences.d/limit-unstable
+    #   when:
+    #     - ansible_distribution == "Debian" and debian_pin_packages
 
 - name: Install wireguard (apt)
   apt:
@@ -178,15 +164,6 @@
   run_once: true
   when: client_vpn_ip | length > 0
   delegate_to: localhost
-
-- name: Start and enable wg-quick systemd service
-  systemd:
-    name: "wg-quick@{{ wireguard_network_name }}"
-    enabled: yes
-    state: started
-
-- name: Restart wg-quick service if required
-  systemd:
-    name: "wg-quick@{{ wireguard_network_name }}"
-    state: restarted
-  when: config.changed
+  notify:
+    - Enable wg-quick service
+    - Restart wg-quick service 
