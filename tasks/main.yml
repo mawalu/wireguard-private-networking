@@ -15,10 +15,10 @@
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version|int < 20
 
-- name: Add unstable repository (Debian)
+- name: Add backports repository (Debian)
   copy:
-    src: templates/unstable.list
-    dest: /etc/apt/sources.list.d/unstable.list
+    src: templates/backports.list
+    dest: /etc/apt/sources.list.d/backport.list
   when:
     - ansible_distribution == "Debian" and debian_enable_testing
 
