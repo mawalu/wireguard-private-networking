@@ -2,7 +2,7 @@
  
 [![Ansible Role](https://img.shields.io/ansible/role/d/33136)](https://galaxy.ansible.com/mawalu/wireguard_private_networking)
  
-This role allowes you to deploy a fast, secure and provider agnostic private network between multiple servers. This is usefull for providers like [hetzner cloud](https://hetzner.cloud) that do not provide you with a private network or if you want to connect servers that are spread over multiple regions and providers.
+This role allowes you to deploy a fast, secure and provider agnostic private network between multiple servers. This is usefull for providers that do not provide you with a private network or if you want to connect servers that are spread over multiple regions and providers.
 
 ## How
 
