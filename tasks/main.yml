@@ -20,7 +20,7 @@
     src: templates/backports.list
     dest: /etc/apt/sources.list.d/backport.list
   when:
-    - ansible_distribution == "Debian" and debian_enable_testing
+    - ansible_distribution == "Debian" and debian_enable_backports
 
     # - name: Pin packages (Debian)
     #   copy:
