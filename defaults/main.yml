@@ -4,7 +4,7 @@ wireguard_path: "/etc/wireguard"
 
 wireguard_network_name: "private"
 
-debian_enable_testing: true
+debian_enable_backports: true
 debian_pin_packages: true
 
 client_vpn_ip: ""

@@ -22,13 +22,6 @@
   when:
     - ansible_distribution == "Debian" and debian_enable_backports
 
-    # - name: Pin packages (Debian)
-    #   copy:
-    #     src: templates/limit-unstable
-    #     dest: /etc/apt/preferences.d/limit-unstable
-    #   when:
-    #     - ansible_distribution == "Debian" and debian_pin_packages
-
 - name: Install wireguard (apt)
   apt:
     update_cache: yes
