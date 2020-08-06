@@ -67,7 +67,6 @@ wireguard_network_name: "private" # the name to use for the config file and wg-q
 wireguard_mtu: 1500 # Optionally a MTU to set in the wg-quick file. Not set by default. Can also be set per host
 
 debian_enable_backports: true # if the debian backports repos should be added on debian machines
-debian_pin_packages: true # if the pin configuration to limit the use of unstable repos should be created on debian machines
 
 client_vpn_ip: "" # if set an additional wireguard config file will be generated at the specified path on localhost
 client_wireguard_path: "~/wg.conf" # path on localhost to write client config, if client_vpn_ip is set 
@@ -87,7 +86,11 @@ wireguard_post_up: "iptables ..." # PostUp hook command
 wireguard_post_down: "iptables"   # PostDown hook command
 ```
 
+## Testing
+
+This role has a small test setup that is created using [molecule](https://github.com/ansible-community/molecule). To run the tests follow the molecule [install guide](https://molecule.readthedocs.io/en/latest/installation.html), ensure that a docker daemon runs on your machine and execute `molecule test`.
+
 ## Contributing
 
-Feel free to open issues or MRs if you find problems or have ideas for improvements. I'm especially open for MRs that add support for more operating systems.
+Feel free to open issues or MRs if you find problems or have ideas for improvements. I'm especially open for MRs that add support for additional operating systems and more tests.
 
