@@ -1,9 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-    - name: "Include wireguard-private-networking"
-      include_role:
-        name: "wireguard-private-networking"
-  vars_files:
-    - testvars.yml
