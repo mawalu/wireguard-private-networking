@@ -66,7 +66,7 @@ wireguard_network_name: "private" # the name to use for the config file and wg-q
 
 wireguard_mtu: 1500 # Optionally a MTU to set in the wg-quick file. Not set by default. Can also be set per host
 
-debian_enable_testing: true # if the debian testing repos should be added on debian machines
+debian_enable_backports: true # if the debian backports repos should be added on debian machines
 debian_pin_packages: true # if the pin configuration to limit the use of unstable repos should be created on debian machines
 
 client_vpn_ip: "" # if set an additional wireguard config file will be generated at the specified path on localhost

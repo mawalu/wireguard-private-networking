@@ -1,0 +1,17 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Call setup"
+      setup:
+    - name: "Print wanted variables"
+      debug:
+        msg: 'ansible_kernel "{{ ansible_kernel }}"'
+    - name: "Include wireguard-private-networking"
+      include_role:
+        name: "wireguard-private-networking"
+  vars:
+    - ansible_python_interpreter: /usr/bin/python3
+    - vpn_ip: "10.10.10.1/32"
+  vars_files:
+    - testvars.yml

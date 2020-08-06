@@ -15,33 +15,12 @@
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version|int < 20
 
-- name: Add unstable repository (Debian)
+- name: Add backports repository (Debian)
   copy:
-    src: templates/unstable.list
-    dest: /etc/apt/sources.list.d/unstable.list
+    src: templates/backports.list
+    dest: /etc/apt/sources.list.d/backport.list
   when:
-    - ansible_distribution == "Debian" and debian_enable_testing
-
-- name: Pin packages (Debian)
-  copy:
-    src: templates/limit-unstable
-    dest: /etc/apt/preferences.d/limit-unstable
-  when:
-    - ansible_distribution == "Debian" and debian_pin_packages
-
-- name: Get kernel version (Debian)
-  command: uname -r
-  register: kernel
-  when:
-    - ansible_distribution == "Debian"
-
-- name: Install kernel headers (Debian)
-  apt:
-    state: present
-    update_cache: true
-    name: linux-headers-{{ kernel.stdout }}
-  when:
-    - ansible_distribution == "Debian"
+    - ansible_distribution == "Debian" and debian_enable_backports
 
 - name: Install wireguard (apt)
   apt:
@@ -62,20 +41,22 @@
 
 - name: Install wireguard (CentOS 8)
   block:
-    - name: Install wireguard (CentOS 8)
+    - name: Install epel repo (CentOS 8)
       dnf:
         name:
           - elrepo-release
           - epel-release
         state: present
 
-    - dnf:
+    - name: Install mod and tools (CentOS 8)
+      dnf:
         name:
           - kmod-wireguard
           - wireguard-tools
         state: present
 
-    - file:
+    - name: Create path (CentOS 8)
+      file:
         path: "{{ wireguard_path }}"
         state: directory
         mode: u=rwx,g=,o=
@@ -85,25 +66,28 @@
 
 - name: Install wireguard (CentOS 7)
   block:
-    - name: Install wireguard (CentOS 7)
+    - name: Install epel (CentOS 7)
       yum:
         name:
           - epel-release
           - https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
         state: present
 
-    - yum:
+    - name: Install plugin-elrepo wireguard (CentOS 7)
+      yum:
         name:
           - yum-plugin-elrepo
         state: present
 
-    - yum:
+    - name: Install wireguard module and tools (CentOS 7)
+      yum:
         name:
           - kmod-wireguard
           - wireguard-tools
         state: present
 
-    - file:
+    - name: Creat path (CentOS 7)
+      file:
         path: "{{ wireguard_path }}"
         state: directory
         mode: u=rwx,g=,o=
@@ -117,7 +101,10 @@
   register: privatekey
 
 - name: Generate wireguard keys
-  shell: "umask 077; wg genkey | tee {{ wireguard_path  }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey"
+  shell: set -o pipefail && \
+         umask 077; wg genkey | tee {{ wireguard_path  }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey
+  args:
+    executable: /bin/bash
   when: not privatekey.stat.exists
 
 - name: Read private key
@@ -138,8 +125,11 @@
   when: client_vpn_ip | length > 0
 
 - name: Generate wireguard client's keys
-  shell: "umask 077; wg genkey | tee {{ wireguard_path  }}/client_privatekey | wg pubkey > {{ wireguard_path }}/client_publickey"
+  shell: set -o pipefail && \
+         umask 077; wg genkey | tee {{ wireguard_path  }}/client_privatekey | wg pubkey > {{ wireguard_path }}/client_publickey
   run_once: true
+  args:
+    executable: /bin/bash
   when:
     - client_vpn_ip | length > 0
     - not client_privatekey.stat.exists
@@ -178,15 +168,6 @@
   run_once: true
   when: client_vpn_ip | length > 0
   delegate_to: localhost
-
-- name: Start and enable wg-quick systemd service
-  systemd:
-    name: "wg-quick@{{ wireguard_network_name }}"
-    enabled: yes
-    state: started
-
-- name: Restart wg-quick service if required
-  systemd:
-    name: "wg-quick@{{ wireguard_network_name }}"
-    state: restarted
-  when: config.changed
+  notify:
+    - Enable wg-quick service
+    - Restart wg-quick service

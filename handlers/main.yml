@@ -1,0 +1,12 @@
+---
+- name: Enable wg-quick service
+  service:
+    name: "wg-quick@{{ wireguard_network_name }}"
+    enabled: yes
+    state: present
+
+- name: Restart wg-quick service
+  service:
+    name: "wg-quick@{{ wireguard_network_name }}"
+    state: restarted
+  when: config.changed
