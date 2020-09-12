@@ -20,6 +20,10 @@ galaxy_info:
     versions:
     - 7
     - 8
+  - name: OpenSuse
+    versions:
+    - 15.1
+    - 15.2
   galaxy_tags:
   - wireguard
   - vpn

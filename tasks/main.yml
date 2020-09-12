@@ -95,6 +95,15 @@
 
   when: ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "7"
 
+- name: Install wireguard and tools (zypper)
+  zypper:
+    name:
+      - iptables
+      - wireguard-tools
+    state: present
+  when:
+    - ansible_distribution == "openSUSE Leap"
+
 - name: Read private key
   stat:
     path: "{{ wireguard_path }}/privatekey"
