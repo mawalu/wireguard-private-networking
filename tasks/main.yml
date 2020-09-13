@@ -98,7 +98,6 @@
 - name: Install wireguard and tools (zypper)
   zypper:
     name:
-      - iptables
       - wireguard-tools
     state: present
   when:
