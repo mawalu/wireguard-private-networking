@@ -157,6 +157,9 @@
     group: root
     mode: "u=rw,g=r,o="
   register: config
+  notify:
+    - Enable wg-quick service
+    - Restart wg-quick service
 
 - name: Generate client's config
   template:
