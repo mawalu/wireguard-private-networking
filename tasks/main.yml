@@ -26,7 +26,7 @@
     update_cache: yes
     state: present
     name: pve-headers
-  when: is_proxmox.stat.exists
+  when: ansible_distribution == "Debian" and is_proxmox.stat.exists
 
 - name: Install wireguard (apt)
   apt:
