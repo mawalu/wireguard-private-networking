@@ -9,18 +9,18 @@
     - ansible_distribution_major_version|int < 20
 
 - name: Add backports repository (Debian)
-  copy:
-    src: templates/backports.list
-    dest: /etc/apt/sources.list.d/backport.list
-  when:
-    - ansible_distribution == "Debian" and debian_enable_backports
+  block:
+    - name: Add backports repository list (Debian)
+      copy:
+        src: templates/backports.list
+        dest: /etc/apt/sources.list.d/backport.list
 
-- name: Add backports repository key (Debian)
-  apt_key:
-    url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release }}.asc
-    state: present
+    - name: Add backports repository key (Debian)
+      apt_key:
+        url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release }}.asc
+        state: present
   when:
-    - ansible_distribution == "Debian" and debian_enable_backports
+    - ansible_distribution == "Debian" and debian_enable_backports and ansible_architecture != "armv61"
 
 - name: Check that is proxmox
   stat:
@@ -42,13 +42,76 @@
     name: raspberrypi-kernel-headers
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian"
 
+- name: Install WireGuard (Raspberry Pi 2, Raspberry Pi Zero W)
+  block:
+    - name: Install compile dependencies
+      apt:
+        update_cache: yes
+        state: present
+        name:
+          - bc
+          - bison
+          - checkinstall
+          - build-essential
+          - flex
+          - git
+          - libelf-dev
+          - libmnl-dev
+          - libncurses5-dev
+          - libssl-dev
+
+    - name: Download rpi-source
+      get_url:
+        url: 'https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source'
+        dest: '/usr/local/bin/rpi-source'
+        mode: u=rwx,g=rx,o=rx
+
+    - name: Run rpi-source
+      shell:
+        cmd: /usr/local/bin/rpi-source -q --tag-update
+
+    - name: Reboot Raspberry Pi and wait for it to come back up
+      reboot:
+
+    - name: Clone WireGuard source
+      git:
+        repo: 'https://git.zx2c4.com/wireguard-linux-compat/'
+        update: true
+        dest: /tmp/wireguard-linux-compat
+
+    - name: Build WireGuard
+      community.general.make:
+        chdir: /tmp/wireguard-linux-compat/src
+
+    - name: Install WireGuard
+      shell:
+        chdir: /tmp/wireguard-linux-compat/src
+        cmd: checkinstall -y --pkgname wireguard
+
+    - name: Clone WireGuard tools source
+      git:
+        repo: 'https://git.zx2c4.com/wireguard-tools'
+        update: true
+        dest: /tmp/wireguard-tools
+
+    - name: Build WireGuard tools
+      community.general.make:
+        chdir: /tmp/wireguard-tools/src
+
+    - name: Install WireGuard tools
+      shell:
+        chdir: /tmp/wireguard-tools/src
+        cmd: checkinstall -y --pkgname wireguard-tools
+
+  when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian" and ansible_architecture == "armv6l"
+
 - name: Install wireguard (apt)
   apt:
     update_cache: yes
     state: present
     name: wireguard
   when:
-    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" and ansible_architecture != "armv6l"
 
 - name: Install wireguard (pacman)
   pacman:
