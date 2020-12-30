@@ -71,6 +71,8 @@ debian_enable_backports: true # if the debian backports repos should be added on
 client_vpn_ip: "" # if set an additional wireguard config file will be generated at the specified path on localhost
 client_wireguard_path: "~/wg.conf" # path on localhost to write client config, if client_vpn_ip is set 
 
+public_addr: "" # if set, this address will be used to connect to the wireguard peer instead of the address in the inventory. Useful if you are configuring over a different network than wireguard is using.
+
 # a list of additional peers that will be added to each server
 wireguard_additional_peers:
   - comment: martin
