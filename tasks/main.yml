@@ -15,6 +15,13 @@
   when:
     - ansible_distribution == "Debian" and debian_enable_backports
 
+- name: Add backports repository key (Debian)
+  apt_key:
+    url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release }}.asc
+    state: present
+  when:
+    - ansible_distribution == "Debian" and debian_enable_backports
+
 - name: Check that is proxmox
   stat:
     path: /etc/pve
@@ -27,6 +34,13 @@
     state: present
     name: pve-headers
   when: ansible_distribution == "Debian" and is_proxmox.stat.exists
+
+- name: Install Raspberry Pi Kernel Headers
+  apt:
+    update_cache: yes
+    state: present
+    name: raspberrypi-kernel-headers
+  when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian"
 
 - name: Install wireguard (apt)
   apt:
@@ -108,6 +122,11 @@
     state: present
   when:
     - ansible_distribution == "openSUSE Leap"
+
+- name: Ensure wireguard_path exists as directory
+  file:
+    path: "{{ wireguard_path }}"
+    state: directory
 
 - name: Read private key
   stat:
