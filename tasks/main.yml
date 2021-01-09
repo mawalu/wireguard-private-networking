@@ -77,30 +77,30 @@
       git:
         repo: 'https://git.zx2c4.com/wireguard-linux-compat/'
         update: true
-        dest: /tmp/wireguard-linux-compat
+        dest: {{ wireguard_sources_path }}/wireguard-linux-compat
 
     - name: Build WireGuard
       community.general.make:
-        chdir: /tmp/wireguard-linux-compat/src
+        chdir: {{ wireguard_sources_path }}/wireguard-linux-compat/src
 
     - name: Install WireGuard
       shell:
-        chdir: /tmp/wireguard-linux-compat/src
+        chdir: {{ wireguard_sources_path }}/wireguard-linux-compat/src
         cmd: checkinstall -y --pkgname wireguard
 
     - name: Clone WireGuard tools source
       git:
         repo: 'https://git.zx2c4.com/wireguard-tools'
         update: true
-        dest: /tmp/wireguard-tools
+        dest: {{ wireguard_sources_path }}/wireguard-tools
 
     - name: Build WireGuard tools
       community.general.make:
-        chdir: /tmp/wireguard-tools/src
+        chdir: {{ wireguard_sources_path }}/wireguard-tools/src
 
     - name: Install WireGuard tools
       shell:
-        chdir: /tmp/wireguard-tools/src
+        chdir: {{ wireguard_sources_path }}/wireguard-tools/src
         cmd: checkinstall -y --pkgname wireguard-tools
 
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian" and ansible_architecture == "armv6l"
