@@ -60,48 +60,55 @@
           - libncurses5-dev
           - libssl-dev
 
-    - name: Download rpi-source
+    - name: Initial download of rpi-source
       get_url:
         url: 'https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source'
         dest: '/usr/local/bin/rpi-source'
         mode: u=rwx,g=rx,o=rx
 
     - name: Run rpi-source
-      shell:
-        cmd: /usr/local/bin/rpi-source -q --tag-update
+      command: /usr/local/bin/rpi-source
+      register: rpi_source_result
+      changed_when: "rpi_source_result.rc == 0"
+      failed_when: "'FAILED' in rpi_source_result.stderr"
 
     - name: Reboot Raspberry Pi and wait for it to come back up
       reboot:
+      when: rpi_source_result.changed
 
     - name: Clone WireGuard source
       git:
         repo: 'https://git.zx2c4.com/wireguard-linux-compat/'
         update: true
-        dest: {{ wireguard_sources_path }}/wireguard-linux-compat
+        dest: "{{ wireguard_sources_path }}/wireguard-linux-compat"
 
     - name: Build WireGuard
       community.general.make:
-        chdir: {{ wireguard_sources_path }}/wireguard-linux-compat/src
+        chdir: "{{ wireguard_sources_path }}/wireguard-linux-compat/src"
+      register: wireguard_build_result
 
     - name: Install WireGuard
-      shell:
-        chdir: {{ wireguard_sources_path }}/wireguard-linux-compat/src
+      command:
+        chdir: "{{ wireguard_sources_path }}/wireguard-linux-compat/src"
         cmd: checkinstall -y --pkgname wireguard
+      when: wireguard_build_result.changed
 
     - name: Clone WireGuard tools source
       git:
         repo: 'https://git.zx2c4.com/wireguard-tools'
         update: true
-        dest: {{ wireguard_sources_path }}/wireguard-tools
+        dest: "{{ wireguard_sources_path }}/wireguard-tools"
 
     - name: Build WireGuard tools
       community.general.make:
-        chdir: {{ wireguard_sources_path }}/wireguard-tools/src
+        chdir: "{{ wireguard_sources_path }}/wireguard-tools/src"
+      register: wireguard_tools_build_result
 
     - name: Install WireGuard tools
-      shell:
-        chdir: {{ wireguard_sources_path }}/wireguard-tools/src
+      command:
+        chdir: "{{ wireguard_sources_path }}/wireguard-tools/src"
         cmd: checkinstall -y --pkgname wireguard-tools
+      when: wireguard_tools_build_result.changed
 
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian" and ansible_architecture == "armv6l"
 

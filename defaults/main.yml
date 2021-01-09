@@ -2,6 +2,8 @@
 wireguard_port: "5888"
 wireguard_path: "/etc/wireguard"
 
+wireguard_sources_path: "/var/cache"
+
 wireguard_network_name: "private"
 
 debian_enable_backports: true

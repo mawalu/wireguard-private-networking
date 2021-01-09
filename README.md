@@ -71,10 +71,12 @@ wireguard_mtu: 1500 # Optionally a MTU to set in the wg-quick file. Not set by d
 
 debian_enable_backports: true # if the debian backports repos should be added on debian machines
 
+allow_build_from_source: true # Caution: Might trigger reboot. Flag whether the build from source is allowed. It might be possible to reboot the host.
+
 wireguard_sources_path: "/var/cache" # Location to clone the WireGuard sources if manual build is required
 
 client_vpn_ip: "" # if set an additional wireguard config file will be generated at the specified path on localhost
-client_wireguard_path: "~/wg.conf" # path on localhost to write client config, if client_vpn_ip is set 
+client_wireguard_path: "~/wg.conf" # path on localhost to write client config, if client_vpn_ip is set
 
 # a list of additional peers that will be added to each server
 wireguard_additional_peers:
