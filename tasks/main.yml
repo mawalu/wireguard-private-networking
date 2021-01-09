@@ -44,6 +44,12 @@
 
 - name: Install WireGuard (Raspberry Pi 2, Raspberry Pi Zero W)
   block:
+    - name: Check if manual builds and reboots are required
+      assert:
+        that:
+          - allow_build_from_source is true
+        fail_msg: "The installation on this platform requires a manual build and possibly a reboot. Please allow these actions by setting the flag 'allow_build_from_source'"
+
     - name: Install compile dependencies
       apt:
         update_cache: yes
