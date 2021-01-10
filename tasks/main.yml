@@ -40,6 +40,7 @@
     update_cache: yes
     state: present
     name: raspberrypi-kernel-headers
+  register: raspberrypi_kernel_headers_result
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian"
 
 - name: Install WireGuard (Raspberry Pi 2, Raspberry Pi Zero W)
@@ -71,6 +72,10 @@
         url: 'https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source'
         dest: '/usr/local/bin/rpi-source'
         mode: u=rwx,g=rx,o=rx
+
+    - name: Reboot Raspberry Pi and wait for it to come back up
+      reboot:
+      when: raspberrypi_kernel_headers_result.changed
 
     - name: Run rpi-source
       command: /usr/local/bin/rpi-source
