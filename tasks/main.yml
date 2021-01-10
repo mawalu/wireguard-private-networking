@@ -9,18 +9,18 @@
     - ansible_distribution_major_version|int < 20
 
 - name: Add backports repository (Debian)
-  copy:
-    src: templates/backports.list
-    dest: /etc/apt/sources.list.d/backport.list
-  when:
-    - ansible_distribution == "Debian" and debian_enable_backports
+  block:
+    - name: Add backports repository list (Debian)
+      copy:
+        src: templates/backports.list
+        dest: /etc/apt/sources.list.d/backport.list
 
-- name: Add backports repository key (Debian)
-  apt_key:
-    url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release }}.asc
-    state: present
+    - name: Add backports repository key (Debian)
+      apt_key:
+        url: https://ftp-master.debian.org/keys/archive-key-{{ ansible_lsb.release }}.asc
+        state: present
   when:
-    - ansible_distribution == "Debian" and debian_enable_backports
+    - ansible_distribution == "Debian" and debian_enable_backports and ansible_architecture != "armv61"
 
 - name: Check that is proxmox
   stat:
@@ -40,7 +40,88 @@
     update_cache: yes
     state: present
     name: raspberrypi-kernel-headers
+  register: raspberrypi_kernel_headers_result
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian"
+
+- name: Install WireGuard (Raspberry Pi 2, Raspberry Pi Zero W)
+  block:
+    - name: Check if manual builds and reboots are required
+      assert:
+        that:
+          - allow_build_from_source is true
+        fail_msg: "The installation on this platform requires a manual build and possibly a reboot. Please allow these actions by setting the flag 'allow_build_from_source'"
+
+    - name: Install compile dependencies
+      apt:
+        update_cache: yes
+        state: present
+        name:
+          - bc
+          - bison
+          - checkinstall
+          - build-essential
+          - flex
+          - git
+          - libelf-dev
+          - libmnl-dev
+          - libncurses5-dev
+          - libssl-dev
+
+    - name: Initial download of rpi-source
+      get_url:
+        url: 'https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source'
+        dest: '/usr/local/bin/rpi-source'
+        mode: u=rwx,g=rx,o=rx
+
+    - name: Reboot Raspberry Pi and wait for it to come back up
+      reboot:
+      when: raspberrypi_kernel_headers_result.changed
+
+    - name: Run rpi-source
+      command: /usr/local/bin/rpi-source
+      register: rpi_source_result
+      changed_when: "rpi_source_result.rc == 0"
+      failed_when: "'FAILED' in rpi_source_result.stderr"
+
+    - name: Reboot Raspberry Pi and wait for it to come back up
+      reboot:
+      when: rpi_source_result.changed
+
+    - name: Clone WireGuard source
+      git:
+        repo: 'https://git.zx2c4.com/wireguard-linux-compat/'
+        update: true
+        dest: "{{ wireguard_sources_path }}/wireguard-linux-compat"
+
+    - name: Build WireGuard
+      community.general.make:
+        chdir: "{{ wireguard_sources_path }}/wireguard-linux-compat/src"
+      register: wireguard_build_result
+
+    - name: Install WireGuard
+      command:
+        chdir: "{{ wireguard_sources_path }}/wireguard-linux-compat/src"
+        cmd: checkinstall -y --pkgname wireguard
+      when: wireguard_build_result.changed
+
+    - name: Clone WireGuard tools source
+      git:
+        repo: 'https://git.zx2c4.com/wireguard-tools'
+        update: true
+        dest: "{{ wireguard_sources_path }}/wireguard-tools"
+
+    - name: Build WireGuard tools
+      community.general.make:
+        chdir: "{{ wireguard_sources_path }}/wireguard-tools/src"
+      register: wireguard_tools_build_result
+
+    - name: Install WireGuard tools
+      command:
+        chdir: "{{ wireguard_sources_path }}/wireguard-tools/src"
+        cmd: checkinstall -y --pkgname wireguard-tools
+      when: wireguard_tools_build_result.changed
+
+  when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian" and ansible_architecture == "armv6l"
 
 - name: Install wireguard (apt)
   apt:
@@ -48,7 +129,7 @@
     state: present
     name: wireguard
   when:
-    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" and ansible_architecture != "armv6l"
 
 - name: Install wireguard (pacman)
   pacman:
