@@ -262,6 +262,20 @@
   run_once: true
   when: client_vpn_ip | length > 0
 
+- name: Provide config validation script
+  copy:
+    content: |
+      #!/bin/bash
+      if [ ! -f /sys/class/net/$1/operstate ]; then
+        exit 0
+      fi
+      symbolic_filename="${2%/*}/$1.conf"
+      unlink ${symbolic_filename}
+      ln -s $2 ${symbolic_filename}
+      wg syncconf $1 <(wg-quick strip ${symbolic_filename})
+    dest: "/tmp/validate_wireguard_config"
+    mode: 0755
+
 - name: Generate configs
   template:
     src: interface.conf.j2
@@ -269,6 +283,7 @@
     owner: root
     group: root
     mode: "u=rw,g=r,o="
+    validate: "/tmp/validate_wireguard_config {{ wireguard_network_name }} %s "
   register: config
   notify:
     - Enable wg-quick service
