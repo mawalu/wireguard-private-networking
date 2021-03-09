@@ -213,23 +213,28 @@
   stat:
     path: "{{ wireguard_path }}/privatekey"
   register: privatekey
+  when: not ansible_check_mode
 
 - name: Generate wireguard keys
   shell: set -o pipefail && \
          umask 077; wg genkey | tee {{ wireguard_path  }}/privatekey | wg pubkey > {{ wireguard_path }}/publickey
   args:
     executable: /bin/bash
-  when: not privatekey.stat.exists
+  when:
+    - not ansible_check_mode
+    - not privatekey.stat.exists
 
 - name: Read private key
   slurp:
     src: "{{ wireguard_path }}/privatekey"
   register: private
+  when: not ansible_check_mode
 
 - name: Read public key
   slurp:
     src: "{{ wireguard_path }}/publickey"
   register: public
+  when: not ansible_check_mode
 
 - name: Read private client's key
   stat:
@@ -253,14 +258,18 @@
     src: "{{ wireguard_path }}/client_privatekey"
   register: client_privatekey
   run_once: true
-  when: client_vpn_ip | length > 0
+  when:
+    - not ansible_check_mode
+    - client_vpn_ip | length > 0
 
 - name: Read public client's key
   slurp:
     src: "{{ wireguard_path }}/client_publickey"
   register: client_publickey
   run_once: true
-  when: client_vpn_ip | length > 0
+  when:
+    - not ansible_check_mode
+    - client_vpn_ip | length > 0
 
 - name: Generate configs
   template:
@@ -273,6 +282,7 @@
   notify:
     - Enable wg-quick service
     - Restart wg-quick service
+  when: not ansible_check_mode
 
 - name: Generate client's config
   template:
@@ -288,3 +298,4 @@
   notify:
     - Enable wg-quick service
     - Restart wg-quick service
+  when: not ansible_check_mode
