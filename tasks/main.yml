@@ -293,9 +293,10 @@
     ansible_connection: local
   become: no
   run_once: true
-  when: client_vpn_ip | length > 0
+  when:
+    - not ansible_check_mode
+    - client_vpn_ip | length > 0
   delegate_to: localhost
   notify:
     - Enable wg-quick service
     - Restart wg-quick service
-  when: not ansible_check_mode
