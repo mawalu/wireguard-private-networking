@@ -1,7 +1,7 @@
 galaxy_info:
-  role_name: wireguard-private-networking
+  role_name: wireguard_private_networking
   author: mawalu
-  company: student
+  company: codelayer.de
   description: Build your own multi server private network using wireguard and ansible
   issue_tracker_url: https://github.com/mawalu/wireguard-private-networking/issues
   license: MIT
