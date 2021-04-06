@@ -11,6 +11,7 @@ debian_pin_packages: true
 
 client_vpn_ip: ""
 client_wireguard_path: "~/wg.conf"
+client_wireguard_dns: false
 
 wireguard_additional_peers: false
 wireguard_post_up: false
