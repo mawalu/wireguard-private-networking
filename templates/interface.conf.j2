@@ -11,6 +11,9 @@ ListenPort = {{ wireguard_port }}
 {% if wireguard_mtu is defined %}
 MTU = {{ wireguard_mtu }}
 {% endif %}
+{% if client_wireguard_dns %}
+DNS = {{ client_wireguard_dns }}
+{% endif %}
 
 {% for node in play_hosts %}
 {% if inventory_hostname != hostvars[node]['inventory_hostname'] %}

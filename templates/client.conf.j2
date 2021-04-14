@@ -1,6 +1,9 @@
 [Interface]
 Address = {{ client_vpn_ip }}
 PrivateKey = {{ client_privatekey.content | b64decode | trim }}
+{% if client_wireguard_dns %}
+DNS = {{ client_wireguard_dns }}
+{% endif %}
 
 {% for node in play_hosts %}
 [Peer]
