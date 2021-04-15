@@ -14,6 +14,7 @@
       copy:
         src: templates/backports.list
         dest: /etc/apt/sources.list.d/backport.list
+        mode: 0644
 
     - name: Add backports repository key (Debian)
       apt_key:
@@ -208,6 +209,7 @@
   file:
     path: "{{ wireguard_path }}"
     state: directory
+    mode: 0755
 
 - name: Read private key
   stat:

@@ -6,10 +6,15 @@ driver:
 lint: |
   set -e
   yamllint .
-  ansible-lint
+  ansible-lint .
 platforms:
   - name: instance
-    image: docker.io/pycontribs/debian:latest
+    image: geerlingguy/docker-ubuntu2004-ansible:latest
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup
+      - /lib/modules:/lib/modules
+    command: /lib/systemd/systemd
     pre_build_image: true
+    privileged: true
 provisioner:
   name: ansible
