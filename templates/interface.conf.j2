@@ -13,6 +13,9 @@ MTU = {{ wireguard_mtu }}
 {% endif %}
 {% if client_wireguard_dns %}
 DNS = {{ client_wireguard_dns }}
+{% if wireguard_fwmark_enabled|bool %}
+FwMark = {{ wireguard_fwmark | default(wireguard_port) }}
+{% endif %}
 {% endif %}
 
 {% for node in play_hosts %}

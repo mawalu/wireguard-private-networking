@@ -16,3 +16,5 @@ client_wireguard_dns: false
 wireguard_additional_peers: false
 wireguard_post_up: false
 wireguard_post_down: false
+
+wireguard_fwmark_enabled: false
