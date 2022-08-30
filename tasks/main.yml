@@ -273,6 +273,16 @@
     - not ansible_check_mode
     - client_vpn_ip | length > 0
 
+- name: full mesh network
+  set_fact:
+    wireguard_hosts: "{{ play_hosts }}"
+  when: wireguard_network|length == 0
+
+- name: user controlled wireguard hosts
+  set_fact:
+    wireguard_hosts: "{{ wireguard_network.get(inventory_hostname,[]) }}"
+  when: wireguard_network|length > 0
+
 - name: Generate configs
   template:
     src: interface.conf.j2
