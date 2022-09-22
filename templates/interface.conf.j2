@@ -13,16 +13,19 @@ MTU = {{ wireguard_mtu }}
 {% endif %}
 {% if client_wireguard_dns %}
 DNS = {{ client_wireguard_dns }}
+{% if wireguard_fwmark_enabled|bool %}
+FwMark = {{ wireguard_fwmark | default(wireguard_port) }}
+{% endif %}
 {% endif %}
 
-{% for node in play_hosts %}
-{% if inventory_hostname != hostvars[node]['inventory_hostname'] %}
+{% for node in wireguard_hosts %}
+{%   if inventory_hostname != hostvars[node]['inventory_hostname'] %}
 [Peer]
 PublicKey = {{ hostvars[node].public.content | b64decode | trim }}
 AllowedIPs = {{ hostvars[node].vpn_ip }}
 Endpoint = {{ hostvars[node]['public_addr'] | default(hostvars[node]['ansible_host']) | default(hostvars[node]['inventory_hostname']) }}:{{ wireguard_port }}
 
-{% endif %}
+{%   endif %}
 {% endfor %}
 
 {% if client_vpn_ip | length > 0 %}

@@ -1,2 +1,5 @@
 warn_list:
   - git-latest
+
+skip_list:
+  - fqcn-builtins

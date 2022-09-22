@@ -5,7 +5,7 @@ galaxy_info:
   description: Build your own multi server private network using wireguard and ansible
   issue_tracker_url: https://github.com/mawalu/wireguard-private-networking/issues
   license: MIT
-  min_ansible_version: 2.7
+  min_ansible_version: "2.7"
   platforms:
   - name: Ubuntu
     versions:
@@ -13,17 +13,17 @@ galaxy_info:
   - name: Debian
     versions:
     - all
-  - name: Archlinux
+  - name: ArchLinux
     versions:
     - all
   - name: EL
     versions:
-    - 7
-    - 8
-  - name: OpenSuse
+    - "7"
+    - "8"
+  - name: opensuse
     versions:
-    - 15.1
-    - 15.2
+    - "15.1"
+    - "15.2"
   galaxy_tags:
   - wireguard
   - vpn

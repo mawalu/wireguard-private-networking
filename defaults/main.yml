@@ -4,6 +4,7 @@ wireguard_path: "/etc/wireguard"
 
 wireguard_sources_path: "/var/cache"
 
+wireguard_network: {}
 wireguard_network_name: "private"
 
 debian_enable_backports: true
@@ -16,3 +17,5 @@ client_wireguard_dns: false
 wireguard_additional_peers: false
 wireguard_post_up: false
 wireguard_post_down: false
+
+wireguard_fwmark_enabled: false

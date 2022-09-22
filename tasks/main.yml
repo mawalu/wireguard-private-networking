@@ -124,13 +124,34 @@
 
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian" and ansible_architecture == "armv6l"
 
-- name: Install wireguard (apt)
+- name: Install wireguard (ubuntu)
   apt:
     update_cache: yes
     state: present
     name: wireguard
   when:
-    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" and ansible_architecture != "armv6l"
+    - ansible_distribution == "Ubuntu"
+    - ansible_architecture != "armv6l"
+
+- name: Install wireguard (debian dkms)
+  apt:
+    update_cache: yes
+    state: present
+    name: wireguard-dkms
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_architecture != "armv6l"
+    - ansible_distribution_major_version|int <= 10
+
+- name: Install wireguard (debian)
+  apt:
+    update_cache: yes
+    state: present
+    name: wireguard
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_architecture != "armv6l"
+    - ansible_distribution_major_version|int > 10
 
 - name: Install wireguard (pacman)
   pacman:
@@ -273,6 +294,16 @@
     - not ansible_check_mode
     - client_vpn_ip | length > 0
 
+- name: full mesh network
+  set_fact:
+    wireguard_hosts: "{{ play_hosts }}"
+  when: wireguard_network|length == 0
+
+- name: user controlled wireguard hosts
+  set_fact:
+    wireguard_hosts: "{{ wireguard_network.get(inventory_hostname,[]) }}"
+  when: wireguard_network|length > 0
+
 - name: Generate configs
   template:
     src: interface.conf.j2
@@ -293,7 +324,7 @@
     mode: "u=rw,g=,o="
   vars:
     ansible_connection: local
-  become: no
+  become: false
   run_once: true
   when:
     - not ansible_check_mode
