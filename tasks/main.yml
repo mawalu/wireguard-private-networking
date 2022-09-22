@@ -8,6 +8,13 @@
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version|int < 20
 
+- name: Install linux headers (Debian)
+  apt:
+    update_cache: yes
+    state: present
+    name: "linux-headers-{{ ansible_facts.kernel }}"
+  when: ansible_distribution == "Debian"
+
 - name: Add backports repository (Debian)
   block:
     - name: Add backports repository list (Debian)
