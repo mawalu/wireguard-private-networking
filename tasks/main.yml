@@ -8,13 +8,6 @@
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version|int < 20
 
-- name: Install linux headers (Debian)
-  apt:
-    update_cache: yes
-    state: present
-    name: "linux-headers-{{ ansible_facts.kernel }}"
-  when: ansible_distribution == "Debian"
-
 - name: Add backports repository (Debian)
   block:
     - name: Add backports repository list (Debian)
@@ -131,13 +124,34 @@
 
   when: ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian" and ansible_architecture == "armv6l"
 
-- name: Install wireguard (apt)
+- name: Install wireguard (ubuntu)
   apt:
     update_cache: yes
     state: present
     name: wireguard
   when:
-    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" and ansible_architecture != "armv6l"
+    - ansible_distribution == "Ubuntu"
+    - ansible_architecture != "armv6l"
+
+- name: Install wireguard (debian dkms)
+  apt:
+    update_cache: yes
+    state: present
+    name: wireguard-dkms
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_architecture != "armv6l"
+    - ansible_distribution_major_version|int <= 10
+
+- name: Install wireguard (debian)
+  apt:
+    update_cache: yes
+    state: present
+    name: wireguard
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_architecture != "armv6l"
+    - ansible_distribution_major_version|int > 10
 
 - name: Install wireguard (pacman)
   pacman:
